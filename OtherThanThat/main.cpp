@@ -1,10 +1,10 @@
-#include "mainwindow.hpp"
+#include "window/BrowserWindow.hpp"
 #include <QApplication>
 
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
-    MainWindow w;
+    BrowserWindow w;
     w.show();
 
     return a.exec();
