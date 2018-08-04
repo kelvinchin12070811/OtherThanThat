@@ -1,9 +1,11 @@
 #ifndef BROWSERWINDOW_HPP
 #define BROWSERWINDOW_HPP
 
+#include <qbytearray.h>
 #include <QMainWindow>
-#include <qwebengineview.h>
 #include <qurl.h>
+#include "Config.hpp"
+#include "webview/CustomWebView.hpp"
 
 class BrowserWindow : public QMainWindow
 {
@@ -12,12 +14,22 @@ public:
     explicit BrowserWindow(QWidget *parent = nullptr);
     BrowserWindow(const QUrl& url, bool isMainWindow = true, QWidget* parent = nullptr);
 
+    CustomWebView* getWebView();
+
+protected:
+    void closeEvent(QCloseEvent* event);
+
 private:
     void setUpUi();
 
+private slots:
+    void on_loadFinished();
+
 private:
-    QWebEngineView* webView{ nullptr };
+    CustomWebView* webView{ nullptr };
     QUrl driveUrl;
+    QByteArray prevWindowRect;
+    QString geoFileName{"win_geo.dat"};
     bool isMainWindow;
 };
 

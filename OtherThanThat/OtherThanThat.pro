@@ -25,7 +25,11 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 SOURCES += \
         main.cpp \
-    window/BrowserWindow.cpp
+    window/BrowserWindow.cpp \
+    Config.cpp \
+    webview/CustomWebView.cpp
 
 HEADERS += \
-    window/BrowserWindow.hpp
+    window/BrowserWindow.hpp \
+    Config.hpp \
+    webview/CustomWebView.hpp
