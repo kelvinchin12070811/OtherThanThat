@@ -28,6 +28,7 @@ private:
 
 private slots:
     void downloadRequested(QWebEngineDownloadItem* item);
+    void openExternal();
     void titleChanger(const QString& newTitle);
     void zoomFactorChecker(const QUrl&);
 
@@ -35,9 +36,10 @@ private:
     bool isMainWindow;
     CustomWebView* webView{ nullptr };
 
-    QAction* closeAction{ nullptr };
     QAction* aboutAction{ nullptr };
     QAction* aboutQtAction{ nullptr };
+    QAction* closeAction{ nullptr };
+    QAction* openInBrowserAction{ nullptr };
 
     QByteArray prevWindowRect;
     QUrl workingUrl{ "about:blank" };

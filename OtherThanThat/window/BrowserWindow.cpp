@@ -1,4 +1,4 @@
-#include <Windows.h>
+#include <qdesktopservices.h>
 #include <qfile.h>
 #include <qmessagebox.h>
 #include <qwebenginedownloaditem.h>
@@ -32,7 +32,6 @@ void BrowserWindow::closeEvent(QCloseEvent *)
 void BrowserWindow::connectObjects()
 {
     //Actions Signals
-    connect(closeAction, &QAction::triggered, [&](){ this->close(); });
     connect(aboutAction, &QAction::triggered, [&](){
         QMessageBox::about(this, "About OtherThanThat v" + Config::APP_VERSION,
                            "OtherThanThat is an unofficial Google Drive Client by Kelvin Chin");
@@ -40,6 +39,8 @@ void BrowserWindow::connectObjects()
     connect(aboutQtAction, &QAction::triggered, [&](){
         QMessageBox::aboutQt(this, QString("About Qt v") + qVersion());
     });
+    connect(closeAction, &QAction::triggered, [&](){ this->close(); });
+    connect(openInBrowserAction, &QAction::triggered, this, &BrowserWindow::openExternal);
 
     //Widgets signals
     connect(webView, &CustomWebView::titleChanged, this, &BrowserWindow::titleChanger);
@@ -53,7 +54,12 @@ void BrowserWindow::setupMenu()
         auto fileMenu = this->menuBar()->addMenu("&File");
 
         closeAction = new QAction("Close", this);
+        openInBrowserAction = new QAction("Open in browser", this);
 
+        openInBrowserAction->setToolTip("Open this page in browser");
+
+        fileMenu->addAction(openInBrowserAction);
+        fileMenu->addSeparator();
         fileMenu->addAction(closeAction);
     }
     {//Help menu
@@ -97,6 +103,11 @@ void BrowserWindow::downloadRequested(QWebEngineDownloadItem *item)
     item = item;//param unuse for now;
     QMessageBox::information(this, "Download notification",
                              "1 item is ready to download\nurl: " + item->path());
+}
+
+void BrowserWindow::openExternal()
+{
+    QDesktopServices::openUrl(webView->url());
 }
 
 void BrowserWindow::titleChanger(const QString &newTitle)

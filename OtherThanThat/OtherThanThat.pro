@@ -36,4 +36,4 @@ HEADERS += \
     Config.hpp \
     webview/CustomWebView.hpp \
     webview/CustomWebRenderer.hpp \
-    window/ItemDownloader.h
+    window/ItemDownloader.hpp
