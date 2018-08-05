@@ -1,5 +1,8 @@
+#include <Windows.h>
 #include <qfile.h>
 #include <qmessagebox.h>
+#include <qwebenginedownloaditem.h>
+#include <qwebengineprofile.h>
 #include "BrowserWindow.hpp"
 
 BrowserWindow::BrowserWindow(QWidget *parent) :
@@ -20,7 +23,7 @@ CustomWebView* BrowserWindow::getWebView()
     return webView;
 }
 
-void BrowserWindow::closeEvent(QCloseEvent *event)
+void BrowserWindow::closeEvent(QCloseEvent *)
 {
     //Save current geometry
     Config::getInstance().setWindowGeo(this->saveGeometry());
@@ -41,6 +44,7 @@ void BrowserWindow::connectObjects()
     //Widgets signals
     connect(webView, &CustomWebView::titleChanged, this, &BrowserWindow::titleChanger);
     connect(webView, &CustomWebView::urlChanged, this, &BrowserWindow::zoomFactorChecker);
+    connect(QWebEngineProfile::defaultProfile(), &QWebEngineProfile::downloadRequested, this, &BrowserWindow::downloadRequested);
 }
 
 void BrowserWindow::setupMenu()
@@ -88,12 +92,19 @@ void BrowserWindow::setUpUi()
 }
 
 //Slots
+void BrowserWindow::downloadRequested(QWebEngineDownloadItem *item)
+{
+    item = item;//param unuse for now;
+    QMessageBox::information(this, "Download notification",
+                             "1 item is ready to download\nurl: " + item->path());
+}
+
 void BrowserWindow::titleChanger(const QString &newTitle)
 {
     this->setWindowTitle(newTitle + " on OtherThanThat");
 }
 
-void BrowserWindow::zoomFactorChecker(const QUrl& url)
+void BrowserWindow::zoomFactorChecker(const QUrl&)
 {
     //set zoom factor for heigher dpi each time url loaded
     auto dpiScale = Config::getInstance().getDPIScale();

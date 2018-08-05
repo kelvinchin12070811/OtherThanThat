@@ -19,7 +19,7 @@ public:
     CustomWebView* getWebView();
 
 protected:
-    void closeEvent(QCloseEvent* event);
+    void closeEvent(QCloseEvent*);
 
 private:
     void connectObjects();
@@ -27,8 +27,9 @@ private:
     void setUpUi();
 
 private slots:
+    void downloadRequested(QWebEngineDownloadItem* item);
     void titleChanger(const QString& newTitle);
-    void zoomFactorChecker(const QUrl& url);
+    void zoomFactorChecker(const QUrl&);
 
 private:
     bool isMainWindow;

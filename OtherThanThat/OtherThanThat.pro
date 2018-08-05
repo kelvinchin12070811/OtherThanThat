@@ -27,9 +27,11 @@ SOURCES += \
         main.cpp \
     window/BrowserWindow.cpp \
     Config.cpp \
-    webview/CustomWebView.cpp
+    webview/CustomWebView.cpp \
+    webview/CustomWebRenderer.cpp
 
 HEADERS += \
     window/BrowserWindow.hpp \
     Config.hpp \
-    webview/CustomWebView.hpp
+    webview/CustomWebView.hpp \
+    webview/CustomWebRenderer.hpp

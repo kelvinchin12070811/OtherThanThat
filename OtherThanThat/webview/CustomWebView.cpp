@@ -6,7 +6,7 @@ CustomWebView::CustomWebView(QWidget* parent):
 {
 }
 
-QWebEngineView* CustomWebView::createWindow(QWebEnginePage::WebWindowType type)
+QWebEngineView* CustomWebView::createWindow(QWebEnginePage::WebWindowType)
 {
     auto window = new BrowserWindow(QUrl("about:blank"), false, nullptr);
     window->setAttribute(Qt::WidgetAttribute::WA_DeleteOnClose);
