@@ -1,9 +1,11 @@
+#include "CustomWebRenderer.hpp"
 #include "CustomWebView.hpp"
 #include "window/BrowserWindow.hpp"
 
 CustomWebView::CustomWebView(QWidget* parent):
     QWebEngineView(parent)
 {
+    this->setPage(new CustomWebRenderer(this));
 }
 
 QWebEngineView* CustomWebView::createWindow(QWebEnginePage::WebWindowType)

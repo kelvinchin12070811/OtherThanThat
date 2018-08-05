@@ -8,7 +8,7 @@ public:
     CustomWebRenderer(QObject* parrent = nullptr);
 
 protected:
-    bool acceptNavigationRequest(const QUrl &url, NavigationType type, bool isMainFrame);
+    bool acceptNavigationRequest(const QUrl &url, NavigationType type, bool);
 };
 
 #endif // CUSTOMWEBRENDERER_HPP

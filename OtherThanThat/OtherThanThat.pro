@@ -28,10 +28,12 @@ SOURCES += \
     window/BrowserWindow.cpp \
     Config.cpp \
     webview/CustomWebView.cpp \
-    webview/CustomWebRenderer.cpp
+    webview/CustomWebRenderer.cpp \
+    window/ItemDownloader.cpp
 
 HEADERS += \
     window/BrowserWindow.hpp \
     Config.hpp \
     webview/CustomWebView.hpp \
-    webview/CustomWebRenderer.hpp
+    webview/CustomWebRenderer.hpp \
+    window/ItemDownloader.h
