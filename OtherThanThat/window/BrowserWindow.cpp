@@ -1,4 +1,5 @@
 #include <qfile.h>
+#include <qmessagebox.h>
 #include "BrowserWindow.hpp"
 
 BrowserWindow::BrowserWindow(QWidget *parent) :
@@ -8,9 +9,10 @@ BrowserWindow::BrowserWindow(QWidget *parent) :
 }
 
 BrowserWindow::BrowserWindow(const QUrl &url, bool isMainWindow, QWidget *parent):
-    driveUrl(url), isMainWindow(isMainWindow), QMainWindow(parent)
+    workingUrl(url), isMainWindow(isMainWindow), QMainWindow(parent)
 {
     setUpUi();
+    connectObjects();
 }
 
 CustomWebView* BrowserWindow::getWebView()
@@ -20,53 +22,81 @@ CustomWebView* BrowserWindow::getWebView()
 
 void BrowserWindow::closeEvent(QCloseEvent *event)
 {
-    if (!isMainWindow) return;
+    //Save current geometry
+    Config::getInstance().setWindowGeo(this->saveGeometry());
+}
 
-    auto currentState = this->saveGeometry();
-    if (currentState == prevWindowRect) return;
+void BrowserWindow::connectObjects()
+{
+    //Actions Signals
+    connect(closeAction, &QAction::triggered, [&](){ this->close(); });
+    connect(aboutAction, &QAction::triggered, [&](){
+        QMessageBox::about(this, "About OtherThanThat v" + Config::APP_VERSION,
+                           "OtherThanThat is an unofficial Google Drive Client by Kelvin Chin");
+    });
+    connect(aboutQtAction, &QAction::triggered, [&](){
+        QMessageBox::aboutQt(this, QString("About Qt v") + qVersion());
+    });
 
-    QFile geoFile(geoFileName);
-    if (geoFile.open(QIODevice::WriteOnly))
-    {
-        geoFile.write(currentState);
+    //Widgets signals
+    connect(webView, &CustomWebView::titleChanged, this, &BrowserWindow::titleChanger);
+    connect(webView, &CustomWebView::urlChanged, this, &BrowserWindow::zoomFactorChecker);
+}
+
+void BrowserWindow::setupMenu()
+{
+    {//File menu
+        auto fileMenu = this->menuBar()->addMenu("&File");
+
+        closeAction = new QAction("Close", this);
+
+        fileMenu->addAction(closeAction);
+    }
+    {//Help menu
+        auto helpMenu = this->menuBar()->addMenu("&About");
+
+        aboutAction = new QAction("About", this);
+        aboutQtAction = new QAction("About Qt", this);
+
+        helpMenu->addAction(aboutAction);
+        helpMenu->addAction(aboutQtAction);
     }
 }
 
 void BrowserWindow::setUpUi()
 {
-    auto setWindowSize = [&]()
-    {
-        this->setMinimumWidth(800 * Config::getInstance().getDPIScale());
-        this->setMinimumHeight(600 * Config::getInstance().getDPIScale());
-    };
+    this->setWindowTitle("OtherThanThat, An Unofficial Google Drive Client");
+    this->setMinimumWidth(800 * Config::getInstance().getDPIScale());
+    this->setMinimumHeight(600 * Config::getInstance().getDPIScale());
 
-    if (isMainWindow)
+    //Restore prev window geometry if have
     {
-        QFile winRectStateFile(geoFileName);
-        if (winRectStateFile.open(QIODevice::ReadOnly))
+        auto geo = Config::getInstance().getWindowGeo();
+        if (!geo.isEmpty())
         {
-            prevWindowRect = winRectStateFile.readAll();
-            this->restoreGeometry(prevWindowRect);
+            this->restoreGeometry(geo);
         }
-        else
-        {
-            setWindowSize();
-        }
-        winRectStateFile.close();
     }
-    else
-    {
-        setWindowSize();
-    }
+
+    setupMenu();
 
     webView = new CustomWebView(this);
     webView->setZoomFactor(Config::getInstance().getDPIScale());
-    webView->setUrl(driveUrl);
+    webView->setUrl(workingUrl);
 
     this->setCentralWidget(webView);
 }
 
-void BrowserWindow::on_loadFinished()
+//Slots
+void BrowserWindow::titleChanger(const QString &newTitle)
 {
+    this->setWindowTitle(newTitle + " on OtherThanThat");
+}
 
+void BrowserWindow::zoomFactorChecker(const QUrl& url)
+{
+    //set zoom factor for heigher dpi each time url loaded
+    auto dpiScale = Config::getInstance().getDPIScale();
+    if (webView->zoomFactor() != dpiScale)
+        webView->setZoomFactor(dpiScale);
 }

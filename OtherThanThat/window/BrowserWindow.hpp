@@ -3,6 +3,8 @@
 
 #include <qbytearray.h>
 #include <QMainWindow>
+#include <qmenu.h>
+#include <qmenubar.h>
 #include <qurl.h>
 #include "Config.hpp"
 #include "webview/CustomWebView.hpp"
@@ -20,17 +22,24 @@ protected:
     void closeEvent(QCloseEvent* event);
 
 private:
+    void connectObjects();
+    void setupMenu();
     void setUpUi();
 
 private slots:
-    void on_loadFinished();
+    void titleChanger(const QString& newTitle);
+    void zoomFactorChecker(const QUrl& url);
 
 private:
-    CustomWebView* webView{ nullptr };
-    QUrl driveUrl;
-    QByteArray prevWindowRect;
-    QString geoFileName{"win_geo.dat"};
     bool isMainWindow;
+    CustomWebView* webView{ nullptr };
+
+    QAction* closeAction{ nullptr };
+    QAction* aboutAction{ nullptr };
+    QAction* aboutQtAction{ nullptr };
+
+    QByteArray prevWindowRect;
+    QUrl workingUrl{ "about:blank" };
 };
 
 #endif // BROWSERWINDOW_HPP
