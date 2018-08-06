@@ -4,6 +4,7 @@
 
 class CustomWebView : public QWebEngineView
 {
+    Q_OBJECT
 public:
     CustomWebView(QWidget* parent = nullptr);
 protected:

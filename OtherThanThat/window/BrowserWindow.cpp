@@ -1,7 +1,6 @@
 #include <qdesktopservices.h>
-#include <qfile.h>
+#include <qfileinfo.h>
 #include <qmessagebox.h>
-#include <qwebenginedownloaditem.h>
 #include <qwebengineprofile.h>
 #include "BrowserWindow.hpp"
 
@@ -100,9 +99,10 @@ void BrowserWindow::setUpUi()
 //Slots
 void BrowserWindow::downloadRequested(QWebEngineDownloadItem *item)
 {
-    item = item;//param unuse for now;
-    QMessageBox::information(this, "Download notification",
-                             "1 item is ready to download\nurl: " + item->path());
+    //(new ItemDownloader)->setDownload(item->path(), item->url());
+    QDesktopServices::openUrl(item->url());
+    QMessageBox::information(this, "Download request sent",
+                             "The request of downloading \"" + QFileInfo(item->path()).fileName() + "\" has been sent to your browser.");
 }
 
 void BrowserWindow::openExternal()

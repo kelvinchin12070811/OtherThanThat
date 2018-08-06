@@ -4,6 +4,7 @@
 
 class CustomWebRenderer : public QWebEnginePage
 {
+    Q_OBJECT
 public:
     CustomWebRenderer(QObject* parrent = nullptr);
 
