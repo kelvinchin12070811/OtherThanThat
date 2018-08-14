@@ -37,3 +37,11 @@ HEADERS += \
     webview/CustomWebView.hpp \
     webview/CustomWebRenderer.hpp \
     window/ItemDownloader.hpp
+
+RESOURCES += \
+    resources.qrc
+
+DISTFILES += \
+    resource.rc
+
+RC_FILE = resource.rc
