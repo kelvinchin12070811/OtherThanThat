@@ -38,8 +38,20 @@ void BrowserWindow::connectObjects()
     connect(aboutQtAction, &QAction::triggered, [&](){
         QMessageBox::aboutQt(this, QString("About Qt v") + qVersion());
     });
+    connect(backNavAction, &QAction::triggered, [&](){
+        this->webView->back();
+    });
     connect(closeAction, &QAction::triggered, [&](){ this->close(); });
+    connect(forwardNavAction, &QAction::triggered, [&](){
+        this->webView->forward();
+    });
     connect(openInBrowserAction, &QAction::triggered, this, &BrowserWindow::openExternal);
+    connect(refreshAction, &QAction::triggered, [&](){
+        this->webView->reload();
+    });
+    connect(showAddressAction, &QAction::triggered, [&](){
+        QMessageBox::information(this, "Address", this->webView->url().toString());
+    });
 
     //Widgets signals
     connect(webView, &CustomWebView::titleChanged, this, &BrowserWindow::titleChanger);
@@ -60,6 +72,25 @@ void BrowserWindow::setupMenu()
         fileMenu->addAction(openInBrowserAction);
         fileMenu->addSeparator();
         fileMenu->addAction(closeAction);
+    }
+    {//Navigatin menu
+        auto navMenu = this->menuBar()->addMenu("&Navigation");
+
+        backNavAction = new QAction("Back", this);
+        forwardNavAction = new QAction("Forward", this);
+        refreshAction = new QAction("Refresh", this);
+        showAddressAction = new QAction("Current URL", this);
+
+        backNavAction->setShortcut(QKeySequence::StandardKey::Back);
+        forwardNavAction->setShortcut(QKeySequence::StandardKey::Forward);
+        refreshAction->setShortcut(QKeySequence(Qt::Key_F5));
+
+        navMenu->addAction(backNavAction);
+        navMenu->addAction(forwardNavAction);
+        navMenu->addSeparator();
+        navMenu->addAction(refreshAction);
+        navMenu->addSeparator();
+        navMenu->addAction(showAddressAction);
     }
     {//Help menu
         auto helpMenu = this->menuBar()->addMenu("&About");

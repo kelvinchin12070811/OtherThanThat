@@ -38,8 +38,12 @@ private:
 
     QAction* aboutAction{ nullptr };
     QAction* aboutQtAction{ nullptr };
+    QAction* backNavAction{ nullptr };
     QAction* closeAction{ nullptr };
+    QAction* forwardNavAction{ nullptr };
     QAction* openInBrowserAction{ nullptr };
+    QAction* refreshAction{ nullptr };
+    QAction* showAddressAction{ nullptr };
 
     QByteArray prevWindowRect;
     QUrl workingUrl{ "about:blank" };
