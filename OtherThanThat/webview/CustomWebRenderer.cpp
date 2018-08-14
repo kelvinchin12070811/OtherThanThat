@@ -9,8 +9,11 @@ CustomWebRenderer::CustomWebRenderer(QObject *parrent):
 {
 }
 
-bool CustomWebRenderer::acceptNavigationRequest(const QUrl &url, NavigationType type, bool)
+bool CustomWebRenderer::acceptNavigationRequest(const QUrl &url, NavigationType type, bool isMainFrame)
 {
+    /*if (url.toString().indexOf("photos.google.com") != -1)
+        return true;
+
     if (type != NavigationTypeLinkClicked) return true;
     std::string targetUrl = url.toString().toUtf8().data();
     std::regex rule("^https?://\\w+\\.(google|youtube)\\.com");
@@ -24,5 +27,6 @@ bool CustomWebRenderer::acceptNavigationRequest(const QUrl &url, NavigationType 
 
     if (openExternalRequest == QMessageBox::Yes)
         QDesktopServices::openUrl(url);
-    return false;
+    return false;*/
+    return QWebEnginePage::acceptNavigationRequest(url, type, isMainFrame);
 }
