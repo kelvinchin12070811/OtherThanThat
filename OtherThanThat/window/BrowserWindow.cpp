@@ -33,7 +33,7 @@ void BrowserWindow::connectObjects()
     //Actions Signals
     connect(aboutAction, &QAction::triggered, [&](){
         QMessageBox::about(this, "About OtherThanThat v" + Config::APP_VERSION,
-                           "OtherThanThat is an unofficial Google Drive Client by Kelvin Chin");
+                           "<img src=\":/ott/resources/icon.png\"/><br/>OtherThanThat is an unofficial Google Drive Client by Kelvin Chin");
     });
     connect(aboutQtAction, &QAction::triggered, [&](){
         QMessageBox::aboutQt(this, QString("About Qt v") + qVersion());
@@ -65,12 +65,6 @@ void BrowserWindow::setupMenu()
         auto fileMenu = this->menuBar()->addMenu("&File");
 
         closeAction = new QAction("Close", this);
-        openInBrowserAction = new QAction("Open in browser", this);
-
-        openInBrowserAction->setToolTip("Open this page in browser");
-
-        fileMenu->addAction(openInBrowserAction);
-        fileMenu->addSeparator();
         fileMenu->addAction(closeAction);
     }
     {//Navigatin menu
@@ -79,16 +73,24 @@ void BrowserWindow::setupMenu()
         backNavAction = new QAction("Back", this);
         forwardNavAction = new QAction("Forward", this);
         refreshAction = new QAction("Refresh", this);
+        openInBrowserAction = new QAction("Open in browser", this);
         showAddressAction = new QAction("Current URL", this);
 
         backNavAction->setShortcut(QKeySequence::StandardKey::Back);
         forwardNavAction->setShortcut(QKeySequence::StandardKey::Forward);
+        openInBrowserAction->setShortcut(QKeySequence(Qt::CTRL + Qt::SHIFT + Qt::Key::Key_O));
         refreshAction->setShortcut(QKeySequence(Qt::Key_F5));
+
+        backNavAction->setToolTip("Navigate back");
+        forwardNavAction->setToolTip("Navigate forward");
+        openInBrowserAction->setToolTip("Open this page in browser");
+        refreshAction->setToolTip("Reload current page");
 
         navMenu->addAction(backNavAction);
         navMenu->addAction(forwardNavAction);
         navMenu->addSeparator();
         navMenu->addAction(refreshAction);
+        navMenu->addAction(openInBrowserAction);
         navMenu->addSeparator();
         navMenu->addAction(showAddressAction);
     }
