@@ -1,8 +1,10 @@
 #include <memory>
 #include <qdesktopservices.h>
+#include <qfiledialog.h>
 #include <qfileinfo.h>
 #include <qmessagebox.h>
 #include <qwebengineprofile.h>
+#include <BookmarkFilePraser.hpp>
 #include "BrowserWindow.hpp"
 #include "window/AddressWindow.hpp"
 
@@ -34,6 +36,7 @@ void BrowserWindow::cmdLineChecker()
 {
     auto& args = Config::getInstance().getCmdArgs();
     if (args.empty() || args.size() <= 1) return;
+
 }
 
 void BrowserWindow::connectObjects()
@@ -57,8 +60,8 @@ void BrowserWindow::connectObjects()
     connect(refreshAction, &QAction::triggered, [&](){
         this->webView->reload();
     });
+    connect(saveBookmarkAction, &QAction::triggered, this, &BrowserWindow::saveBookmark);
     connect(showAddressAction, &QAction::triggered, [&](){
-        //QMessageBox::information(this, "Address", this->webView->url().toString());
         std::unique_ptr<AddressWindow> addressWin = std::make_unique<AddressWindow>(this->webView->url(), this);
         addressWin->setWindowModality(Qt::ApplicationModal);
         addressWin->exec();
@@ -76,6 +79,10 @@ void BrowserWindow::setupMenu()
         auto fileMenu = this->menuBar()->addMenu("&File");
 
         closeAction = new QAction("Close", this);
+        saveBookmarkAction = new QAction("Create local bookmark", this);
+
+        fileMenu->addAction(saveBookmarkAction);
+        fileMenu->addSeparator();
         fileMenu->addAction(closeAction);
     }
     {//Navigatin menu
@@ -149,13 +156,33 @@ void BrowserWindow::downloadRequested(QWebEngineDownloadItem *item)
                              "The request of downloading \"" + QFileInfo(item->path()).fileName() + "\" has been sent to your browser.");
 }
 
+void BrowserWindow::openBookmark()
+{
+    QString file = QFileDialog::getOpenFileName(this, "Select bookmark", "", "*.bmf");
+    if (file.isEmpty()) return;
+
+    BookmarkFilePraser bmfPraser(file, BookmarkFilePraser::FileMode::LoadFile);
+    webView->load(QUrl(bmfPraser.getTargetUrl()));
+}
+
 void BrowserWindow::openExternal()
 {
     QDesktopServices::openUrl(webView->url());
 }
 
+void BrowserWindow::saveBookmark()
+{
+    QString file = QFileDialog::getSaveFileName(this, "Save bookmark to...", "", "*.bmf");
+    if (file.isEmpty()) return;
+
+    BookmarkFilePraser bmfPraser(file, BookmarkFilePraser::FileMode::CreateFile);
+    bmfPraser.setTargetUrl(webView->url().toString());
+    bmfPraser.dump();
+}
+
 void BrowserWindow::titleChanger(const QString &newTitle)
 {
+    webTitle = newTitle;
     this->setWindowTitle(newTitle + " on OtherThanThat");
 }
 

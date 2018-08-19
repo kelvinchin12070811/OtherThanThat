@@ -38,7 +38,8 @@ SOURCES += \
     window/BrowserWindow.cpp \
     window/ItemDownloader.cpp \
     Config.cpp \
-    main.cpp
+    main.cpp \
+    BookmarkFilePraser.cpp
 
 HEADERS += \
     window/BrowserWindow.hpp \
@@ -54,7 +55,8 @@ HEADERS += \
     window/AddressWindow.hpp \
     window/BrowserWindow.hpp \
     window/ItemDownloader.hpp \
-    Config.hpp
+    Config.hpp \
+    BookmarkFilePraser.hpp
 
 RESOURCES += \
     resources.qrc

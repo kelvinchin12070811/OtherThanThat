@@ -29,7 +29,9 @@ private:
 
 private slots:
     void downloadRequested(QWebEngineDownloadItem* item);
+    void openBookmark();
     void openExternal();
+    void saveBookmark();
     void titleChanger(const QString& newTitle);
     void zoomFactorChecker(const QUrl&);
 
@@ -42,11 +44,14 @@ private:
     QAction* backNavAction{ nullptr };
     QAction* closeAction{ nullptr };
     QAction* forwardNavAction{ nullptr };
+    QAction* openBookmarkAction{ nullptr };
     QAction* openInBrowserAction{ nullptr };
     QAction* refreshAction{ nullptr };
+    QAction* saveBookmarkAction{ nullptr };
     QAction* showAddressAction{ nullptr };
 
     QByteArray prevWindowRect;
+    QString webTitle{ "about-blank" };
     QUrl workingUrl{ "about:blank" };
 };
 
