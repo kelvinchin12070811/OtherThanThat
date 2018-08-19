@@ -56,6 +56,7 @@ void BrowserWindow::connectObjects()
     connect(forwardNavAction, &QAction::triggered, [&](){
         this->webView->forward();
     });
+    connect(openBookmarkAction, &QAction::triggered, this, &BrowserWindow::openBookmark);
     connect(openInBrowserAction, &QAction::triggered, this, &BrowserWindow::openExternal);
     connect(refreshAction, &QAction::triggered, [&](){
         this->webView->reload();
@@ -80,8 +81,10 @@ void BrowserWindow::setupMenu()
 
         closeAction = new QAction("Close", this);
         saveBookmarkAction = new QAction("Create local bookmark", this);
+        openBookmarkAction = new QAction("Open local bookmark", this);
 
         fileMenu->addAction(saveBookmarkAction);
+        fileMenu->addAction(openBookmarkAction);
         fileMenu->addSeparator();
         fileMenu->addAction(closeAction);
     }
@@ -158,11 +161,19 @@ void BrowserWindow::downloadRequested(QWebEngineDownloadItem *item)
 
 void BrowserWindow::openBookmark()
 {
+    QString prevTitle = this->windowTitle();
+    this->setWindowTitle("OtherThanThat is loading a book mark...");
     QString file = QFileDialog::getOpenFileName(this, "Select bookmark", "", "*.bmf");
     if (file.isEmpty()) return;
 
     BookmarkFilePraser bmfPraser(file, BookmarkFilePraser::FileMode::LoadFile);
-    webView->load(QUrl(bmfPraser.getTargetUrl()));
+    auto url = bmfPraser.getTargetUrl();
+    if (!url.isEmpty())
+    {
+        webView->load(QUrl(url));
+        return;
+    }
+    this->setWindowTitle(prevTitle);
 }
 
 void BrowserWindow::openExternal()
@@ -172,7 +183,7 @@ void BrowserWindow::openExternal()
 
 void BrowserWindow::saveBookmark()
 {
-    QString file = QFileDialog::getSaveFileName(this, "Save bookmark to...", "", "*.bmf");
+    QString file = QFileDialog::getSaveFileName(this, "Save bookmark to...", webTitle, "*.bmf");
     if (file.isEmpty()) return;
 
     BookmarkFilePraser bmfPraser(file, BookmarkFilePraser::FileMode::CreateFile);

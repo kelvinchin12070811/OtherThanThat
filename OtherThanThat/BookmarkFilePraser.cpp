@@ -8,13 +8,26 @@ BookmarkFilePraser::BookmarkFilePraser(const QString &name, FileMode mode):
 {
     if (mode == FileMode::LoadFile)
     {
+        try
+        {
         pugi::xml_document document;
         document.load_file(name.toUtf8().data());
         auto root = document.child("bookmark_meta");
-        if (root.empty()) throw ("error prasing bookmark file");
+        if (root.empty()) throw std::runtime_error("error prasing bookmark file");
 
-        if (root.attribute("magic").as_string() != "BMF-CC50")
+        if (QString::fromUtf8(root.attribute("magic").as_string()) != QString("BMF-CC50"))
             throw std::runtime_error("invalid bookmark file");
+
+        auto targetNode = root.child("target");
+        if (targetNode.empty())
+            throw std::runtime_error("target not found");
+        else
+            targetUrl = QString::fromUtf8(targetNode.text().as_string());
+        }
+        catch (std::exception& e)
+        {
+            QMessageBox::critical(nullptr, "Error", QString::fromUtf8(e.what()));
+        }
     }
 }
 
