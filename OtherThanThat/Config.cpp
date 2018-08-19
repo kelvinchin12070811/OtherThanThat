@@ -30,6 +30,33 @@ void Config::setWindowGeo(const QByteArray &value)
     isWindowGeoChanged = true;
 }
 
+const std::vector<QString>& Config::getCmdArgs() const
+{
+    return cmdArgs;
+}
+
+void Config::setCmdArgs(const std::vector<QString> &args)
+{
+    cmdArgs = args;
+}
+
+void Config::setCmdArgs(std::vector<QString> &&args)
+{
+    cmdArgs = std::move(args);
+}
+
+void Config::setCmdArgs(int argc, char **argv)
+{
+    cmdArgs.reserve(argc);
+    for (int x = 0; x < argc; x++)
+        cmdArgs.push_back(argv[x]);
+}
+
+QSize Config::adjustScale(const QSize &size)
+{
+    return QSize(size.width() * dpiScale, size.height() * dpiScale);
+}
+
 Config::Config()
 {
     //Get desktop dpi

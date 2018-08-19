@@ -22,6 +22,7 @@ protected:
     void closeEvent(QCloseEvent*);
 
 private:
+    void cmdLineChecker();
     void connectObjects();
     void setupMenu();
     void setUpUi();

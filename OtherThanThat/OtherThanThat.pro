@@ -29,14 +29,32 @@ SOURCES += \
     Config.cpp \
     webview/CustomWebView.cpp \
     webview/CustomWebRenderer.cpp \
-    window/ItemDownloader.cpp
+    window/ItemDownloader.cpp \
+    window/AddressWindow.cpp \
+    libs/pugixml/pugixml.cpp \
+    webview/CustomWebRenderer.cpp \
+    webview/CustomWebView.cpp \
+    window/AddressWindow.cpp \
+    window/BrowserWindow.cpp \
+    window/ItemDownloader.cpp \
+    Config.cpp \
+    main.cpp
 
 HEADERS += \
     window/BrowserWindow.hpp \
     Config.hpp \
     webview/CustomWebView.hpp \
     webview/CustomWebRenderer.hpp \
-    window/ItemDownloader.hpp
+    window/ItemDownloader.hpp \
+    window/AddressWindow.hpp \
+    libs/pugixml/pugiconfig.hpp \
+    libs/pugixml/pugixml.hpp \
+    webview/CustomWebRenderer.hpp \
+    webview/CustomWebView.hpp \
+    window/AddressWindow.hpp \
+    window/BrowserWindow.hpp \
+    window/ItemDownloader.hpp \
+    Config.hpp
 
 RESOURCES += \
     resources.qrc

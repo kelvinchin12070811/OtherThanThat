@@ -1,8 +1,10 @@
+#include <memory>
 #include <qdesktopservices.h>
 #include <qfileinfo.h>
 #include <qmessagebox.h>
 #include <qwebengineprofile.h>
 #include "BrowserWindow.hpp"
+#include "window/AddressWindow.hpp"
 
 BrowserWindow::BrowserWindow(QWidget *parent) :
     BrowserWindow(QUrl("https://accounts.google.com/signin/v2/identifier?service=wise&passive=true&continue=http%3A%2F%2Fdrive.google.com%2F%3Futm_source%3Den_US&utm_medium=button&utm_campaign=web&utm_content=gotodrive&usp=gtd&ltmpl=drive&flowName=GlifWebSignIn&flowEntry=ServiceLogin"),
@@ -28,6 +30,12 @@ void BrowserWindow::closeEvent(QCloseEvent *)
     Config::getInstance().setWindowGeo(this->saveGeometry());
 }
 
+void BrowserWindow::cmdLineChecker()
+{
+    auto& args = Config::getInstance().getCmdArgs();
+    if (args.empty() || args.size() <= 1) return;
+}
+
 void BrowserWindow::connectObjects()
 {
     //Actions Signals
@@ -50,7 +58,10 @@ void BrowserWindow::connectObjects()
         this->webView->reload();
     });
     connect(showAddressAction, &QAction::triggered, [&](){
-        QMessageBox::information(this, "Address", this->webView->url().toString());
+        //QMessageBox::information(this, "Address", this->webView->url().toString());
+        std::unique_ptr<AddressWindow> addressWin = std::make_unique<AddressWindow>(this->webView->url(), this);
+        addressWin->setWindowModality(Qt::ApplicationModal);
+        addressWin->exec();
     });
 
     //Widgets signals
@@ -108,8 +119,7 @@ void BrowserWindow::setupMenu()
 void BrowserWindow::setUpUi()
 {
     this->setWindowTitle("OtherThanThat, An Unofficial Google Drive Client");
-    this->setMinimumWidth(800 * Config::getInstance().getDPIScale());
-    this->setMinimumHeight(600 * Config::getInstance().getDPIScale());
+    this->setMinimumSize(Config::getInstance().adjustScale(QSize(800, 600)));
 
     //Restore prev window geometry if have
     {
@@ -120,6 +130,7 @@ void BrowserWindow::setUpUi()
         }
     }
 
+    cmdLineChecker();
     setupMenu();
 
     webView = new CustomWebView(this);
