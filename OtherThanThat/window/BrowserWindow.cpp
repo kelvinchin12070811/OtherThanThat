@@ -36,7 +36,15 @@ void BrowserWindow::cmdLineChecker()
 {
     auto& args = Config::getInstance().getCmdArgs();
     if (args.empty() || args.size() <= 1) return;
+    auto file = args.back();
+    if (file.isEmpty()) return;
 
+    BookmarkFilePraser bmfPraser(file, BookmarkFilePraser::FileMode::LoadFile);
+    auto url = bmfPraser.getTargetUrl();
+    if (!url.isEmpty())
+    {
+        workingUrl = url;
+    }
 }
 
 void BrowserWindow::connectObjects()

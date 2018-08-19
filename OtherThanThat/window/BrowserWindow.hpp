@@ -56,7 +56,7 @@ private:
     QAction* showAddressAction{ nullptr };
 
     QByteArray prevWindowRect;
-    QString webTitle{ "about-blank" };
+    QString webTitle{ "browser about blank" };
     QUrl workingUrl{ "about:blank" };
 };
 
