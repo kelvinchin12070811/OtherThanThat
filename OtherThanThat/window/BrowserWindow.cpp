@@ -62,13 +62,16 @@ void BrowserWindow::connectObjects()
         this->webView->reload();
     });
     connect(saveBookmarkAction, &QAction::triggered, this, &BrowserWindow::saveBookmark);
+    connect(savePDFAction, &QAction::triggered, this, &BrowserWindow::savePDF);
     connect(showAddressAction, &QAction::triggered, [&](){
-        std::unique_ptr<AddressWindow> addressWin = std::make_unique<AddressWindow>(this->webView->url(), this);
-        addressWin->setWindowModality(Qt::ApplicationModal);
-        addressWin->exec();
+        AddressWindow* win = new AddressWindow(this->webView->url(), this);
+        win->setAttribute(Qt::WA_DeleteOnClose, true);
+        win->show();
     });
 
     //Widgets signals
+    connect(webView, &CustomWebView::loadFinished, this, &BrowserWindow::loadFinished);
+    connect(webView, &CustomWebView::loadStarted, this, &BrowserWindow::loadStarted);
     connect(webView, &CustomWebView::titleChanged, this, &BrowserWindow::titleChanger);
     connect(webView, &CustomWebView::urlChanged, this, &BrowserWindow::zoomFactorChecker);
     connect(QWebEngineProfile::defaultProfile(), &QWebEngineProfile::downloadRequested, this, &BrowserWindow::downloadRequested);
@@ -80,11 +83,14 @@ void BrowserWindow::setupMenu()
         auto fileMenu = this->menuBar()->addMenu("&File");
 
         closeAction = new QAction("Close", this);
-        saveBookmarkAction = new QAction("Create local bookmark", this);
         openBookmarkAction = new QAction("Open local bookmark", this);
+        saveBookmarkAction = new QAction("Create local bookmark", this);
+        savePDFAction = new QAction("Save current page as PDF", this);
 
         fileMenu->addAction(saveBookmarkAction);
         fileMenu->addAction(openBookmarkAction);
+        fileMenu->addSeparator();
+        fileMenu->addAction(savePDFAction);
         fileMenu->addSeparator();
         fileMenu->addAction(closeAction);
     }
@@ -159,11 +165,22 @@ void BrowserWindow::downloadRequested(QWebEngineDownloadItem *item)
                              "The request of downloading \"" + QFileInfo(item->path()).fileName() + "\" has been sent to your browser.");
 }
 
+void BrowserWindow::loadStarted()
+{
+    loaded = false;
+    this->setWindowTitle(webTitle + " on OtherThanThat [Loading...]");
+}
+
+void BrowserWindow::loadFinished()
+{
+    loaded = true;
+    if (loaded)
+        this->setWindowTitle(webTitle + " on OtherThanThat");
+}
+
 void BrowserWindow::openBookmark()
 {
-    QString prevTitle = this->windowTitle();
-    this->setWindowTitle("OtherThanThat is loading a book mark...");
-    QString file = QFileDialog::getOpenFileName(this, "Select bookmark", "", "*.bmf");
+    QString file = QFileDialog::getOpenFileName(this, "Select bookmark", "", "Bookmark file(*.bmf)");
     if (file.isEmpty()) return;
 
     BookmarkFilePraser bmfPraser(file, BookmarkFilePraser::FileMode::LoadFile);
@@ -173,7 +190,6 @@ void BrowserWindow::openBookmark()
         webView->load(QUrl(url));
         return;
     }
-    this->setWindowTitle(prevTitle);
 }
 
 void BrowserWindow::openExternal()
@@ -183,12 +199,23 @@ void BrowserWindow::openExternal()
 
 void BrowserWindow::saveBookmark()
 {
-    QString file = QFileDialog::getSaveFileName(this, "Save bookmark to...", webTitle, "*.bmf");
+    QString file = QFileDialog::getSaveFileName(this, "Save bookmark to...", webTitle, "Bookmark file(*.bmf)");
     if (file.isEmpty()) return;
 
     BookmarkFilePraser bmfPraser(file, BookmarkFilePraser::FileMode::CreateFile);
     bmfPraser.setTargetUrl(webView->url().toString());
     bmfPraser.dump();
+}
+
+void BrowserWindow::savePDF()
+{
+    /*if (loaded == false)
+    {
+        QMessageBox::information(this, "Page not finish load yet", "This page have not yet finish loaded, try again after it load finish");
+        return;
+    }*/
+    QString fileName = QFileDialog::getSaveFileName(this, "Save your PDF to...", webTitle, "PDF file(*.pdf)");
+    webView->page()->printToPdf(fileName);
 }
 
 void BrowserWindow::titleChanger(const QString &newTitle)

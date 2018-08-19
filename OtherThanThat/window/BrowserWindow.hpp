@@ -29,14 +29,18 @@ private:
 
 private slots:
     void downloadRequested(QWebEngineDownloadItem* item);
+    void loadStarted();
+    void loadFinished();
     void openBookmark();
     void openExternal();
     void saveBookmark();
+    void savePDF();
     void titleChanger(const QString& newTitle);
     void zoomFactorChecker(const QUrl&);
 
 private:
     bool isMainWindow;
+    bool loaded{ true };
     CustomWebView* webView{ nullptr };
 
     QAction* aboutAction{ nullptr };
@@ -48,6 +52,7 @@ private:
     QAction* openInBrowserAction{ nullptr };
     QAction* refreshAction{ nullptr };
     QAction* saveBookmarkAction{ nullptr };
+    QAction* savePDFAction{ nullptr };
     QAction* showAddressAction{ nullptr };
 
     QByteArray prevWindowRect;
