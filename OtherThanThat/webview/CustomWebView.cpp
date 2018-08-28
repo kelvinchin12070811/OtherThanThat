@@ -1,3 +1,4 @@
+#include <qwebenginesettings.h>
 #include "CustomWebRenderer.hpp"
 #include "CustomWebView.hpp"
 #include "window/BrowserWindow.hpp"
@@ -6,6 +7,7 @@ CustomWebView::CustomWebView(QWidget* parent):
     QWebEngineView(parent)
 {
     this->setPage(new CustomWebRenderer(this));
+    this->settings()->setAttribute(QWebEngineSettings::FullScreenSupportEnabled, true);
 }
 
 QWebEngineView* CustomWebView::createWindow(QWebEnginePage::WebWindowType)

@@ -39,7 +39,9 @@ SOURCES += \
     window/ItemDownloader.cpp \
     Config.cpp \
     main.cpp \
-    BookmarkFilePraser.cpp
+    BookmarkFilePraser.cpp \
+    window/util/FullscreenNotification.cpp \
+    window/FullscreenView.cpp
 
 HEADERS += \
     window/BrowserWindow.hpp \
@@ -56,7 +58,9 @@ HEADERS += \
     window/BrowserWindow.hpp \
     window/ItemDownloader.hpp \
     Config.hpp \
-    BookmarkFilePraser.hpp
+    BookmarkFilePraser.hpp \
+    window/util/FullscreenNotification.hpp \
+    window/FullscreenView.hpp
 
 RESOURCES += \
     resources.qrc

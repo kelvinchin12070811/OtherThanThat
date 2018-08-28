@@ -1,11 +1,12 @@
 #include <qapplication.h>
+#include <qdebug.h>
 #include <qdesktopwidget.h>
 #include <qfile.h>
-#include <qdebug.h>
+#include <qdir.h>
+#include <qwebengineprofile.h>
 #include "Config.hpp"
 
 const QString Config::APP_VERSION = "1.0";
-const QString Config::GEO_FILE_NAME = "win_geo.dat";
 
 Config & Config::getInstance()
 {
@@ -52,6 +53,16 @@ void Config::setCmdArgs(int argc, char **argv)
         cmdArgs.push_back(argv[x]);
 }
 
+QString Config::getAppDataLocation()
+{
+    return appDataLocation;
+}
+
+QString Config::getGeoFileName()
+{
+    return geoFileName;
+}
+
 QSize Config::adjustScale(const QSize &size)
 {
     return QSize(size.width() * dpiScale, size.height() * dpiScale);
@@ -63,8 +74,21 @@ Config::Config()
     auto desktopWg = QApplication::desktop();
     dpiScale= static_cast<float>(desktopWg->logicalDpiX()) / DEFAULT_DPI;
 
+    {//Get local appdata location
+        QDir cacheDir(QWebEngineProfile::defaultProfile()->cachePath());
+        cacheDir.cd("../../../");
+        appDataLocation = cacheDir.absolutePath();
+
+        if(!QDir(appDataLocation + "/settings").exists())
+        {
+            cacheDir.mkdir("settings");
+        }
+
+        geoFileName = appDataLocation + "/settings/" + geoFileName;
+    }
+
     //Get previous window geo
-    QFile file(Config::GEO_FILE_NAME);
+    QFile file(getGeoFileName());
     if (file.open(QIODevice::ReadOnly))
     {
         windowGeo = file.readAll();
@@ -76,7 +100,7 @@ Config::~Config()
     //Save current window geo
     if (isWindowGeoChanged)
     {
-        QFile file(Config::GEO_FILE_NAME);
+        QFile file(getGeoFileName());
         if (file.open(QIODevice::WriteOnly))
         {
             file.write(windowGeo);

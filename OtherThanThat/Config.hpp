@@ -20,6 +20,9 @@ public:
     void setCmdArgs(std::vector<QString>&& args);
     void setCmdArgs(int argc, char** argv);
 
+    QString getAppDataLocation();
+    QString getGeoFileName();
+
     QSize adjustScale(const QSize& size);
 
     template <typename T>
@@ -30,13 +33,14 @@ public:
 
 public: //Constant
     static const QString APP_VERSION;
-    static const QString GEO_FILE_NAME;
 
 private:
     const float DEFAULT_DPI{ 96.0f };
     bool isWindowGeoChanged{ false };
     float dpiScale{ 0 };
     QByteArray windowGeo;
+    QString appDataLocation;
+    QString geoFileName{ "win_geo.dat" };
     std::vector<QString> cmdArgs;
 
 private:

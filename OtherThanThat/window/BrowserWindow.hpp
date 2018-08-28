@@ -1,13 +1,17 @@
 #ifndef BROWSERWINDOW_HPP
 #define BROWSERWINDOW_HPP
 
+#include <memory>
 #include <qbytearray.h>
 #include <QMainWindow>
 #include <qmenu.h>
 #include <qmenubar.h>
+#include <qpointer.h>
 #include <qurl.h>
+#include <qwebenginefullscreenrequest.h>
 #include "Config.hpp"
 #include "webview/CustomWebView.hpp"
+#include "window/FullScreenView.hpp"
 
 class BrowserWindow : public QMainWindow
 {
@@ -29,6 +33,7 @@ private:
 
 private slots:
     void downloadRequested(QWebEngineDownloadItem* item);
+    void fullScreenRequested(QWebEngineFullScreenRequest request);
     void loadStarted();
     void loadFinished();
     void openBookmark();
@@ -41,19 +46,22 @@ private slots:
 private:
     bool isMainWindow;
     bool loaded{ true };
-    CustomWebView* webView{ nullptr };
+    QPointer<CustomWebView> webView{ nullptr };
 
-    QAction* aboutAction{ nullptr };
-    QAction* aboutQtAction{ nullptr };
-    QAction* backNavAction{ nullptr };
-    QAction* closeAction{ nullptr };
-    QAction* forwardNavAction{ nullptr };
-    QAction* openBookmarkAction{ nullptr };
-    QAction* openInBrowserAction{ nullptr };
-    QAction* refreshAction{ nullptr };
-    QAction* saveBookmarkAction{ nullptr };
-    QAction* savePDFAction{ nullptr };
-    QAction* showAddressAction{ nullptr };
+    QPointer<QAction> aboutAction{ nullptr };
+    QPointer<QAction> aboutQtAction{ nullptr };
+    QPointer<QAction> backNavAction{ nullptr };
+    QPointer<QAction> closeAction{ nullptr };
+    QPointer<QAction> forwardNavAction{ nullptr };
+    QPointer<QAction> openBookmarkAction{ nullptr };
+    QPointer<QAction> openCacheLocation{ nullptr };
+    QPointer<QAction> openInBrowserAction{ nullptr };
+    QPointer<QAction> refreshAction{ nullptr };
+    QPointer<QAction> saveBookmarkAction{ nullptr };
+    QPointer<QAction> savePDFAction{ nullptr };
+    QPointer<QAction> showAddressAction{ nullptr };
+
+    std::unique_ptr<FullscreenView> fsViewer{ nullptr };
 
     QByteArray prevWindowRect;
     QString webTitle{ "browser about blank" };

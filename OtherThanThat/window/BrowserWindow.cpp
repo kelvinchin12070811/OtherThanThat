@@ -65,6 +65,9 @@ void BrowserWindow::connectObjects()
         this->webView->forward();
     });
     connect(openBookmarkAction, &QAction::triggered, this, &BrowserWindow::openBookmark);
+    connect(openCacheLocation, &QAction::triggered, [&]() {
+       QDesktopServices::openUrl(QUrl(Config::getInstance().getAppDataLocation()));
+    });
     connect(openInBrowserAction, &QAction::triggered, this, &BrowserWindow::openExternal);
     connect(refreshAction, &QAction::triggered, [&](){
         this->webView->reload();
@@ -80,6 +83,7 @@ void BrowserWindow::connectObjects()
     //Widgets signals
     connect(webView, &CustomWebView::loadFinished, this, &BrowserWindow::loadFinished);
     connect(webView, &CustomWebView::loadStarted, this, &BrowserWindow::loadStarted);
+    connect(webView->page(), &QWebEnginePage::fullScreenRequested, this, &BrowserWindow::fullScreenRequested);
     connect(webView, &CustomWebView::titleChanged, this, &BrowserWindow::titleChanger);
     connect(webView, &CustomWebView::urlChanged, this, &BrowserWindow::zoomFactorChecker);
     connect(QWebEngineProfile::defaultProfile(), &QWebEngineProfile::downloadRequested, this, &BrowserWindow::downloadRequested);
@@ -92,14 +96,19 @@ void BrowserWindow::setupMenu()
 
         closeAction = new QAction("Close", this);
         openBookmarkAction = new QAction("Open local bookmark", this);
+        openCacheLocation = new QAction("Open cache folder", this);
         saveBookmarkAction = new QAction("Create local bookmark", this);
         savePDFAction = new QAction("Save current page as PDF", this);
+
+        openBookmarkAction->setShortcut(QKeySequence::Open);
+        saveBookmarkAction->setShortcut(QKeySequence::Save);
 
         fileMenu->addAction(saveBookmarkAction);
         fileMenu->addAction(openBookmarkAction);
         fileMenu->addSeparator();
         fileMenu->addAction(savePDFAction);
         fileMenu->addSeparator();
+        fileMenu->addAction(openCacheLocation);
         fileMenu->addAction(closeAction);
     }
     {//Navigatin menu
@@ -173,10 +182,27 @@ void BrowserWindow::downloadRequested(QWebEngineDownloadItem *item)
                              "The request of downloading \"" + QFileInfo(item->path()).fileName() + "\" has been sent to your browser.");
 }
 
+void BrowserWindow::fullScreenRequested(QWebEngineFullScreenRequest request)
+{
+    if (request.toggleOn())
+    {
+        if (fsViewer != nullptr) return;
+        request.accept();
+        fsViewer = std::make_unique<FullscreenView>(webView);
+    }
+    else
+    {
+        if (fsViewer == nullptr) return;
+        request.accept();
+        fsViewer = nullptr;
+    }
+}
+
 void BrowserWindow::loadStarted()
 {
     loaded = false;
     this->setWindowTitle(webTitle + " on OtherThanThat [Loading...]");
+    zoomFactorChecker(QUrl());
 }
 
 void BrowserWindow::loadFinished()
@@ -195,6 +221,7 @@ void BrowserWindow::openBookmark()
     auto url = bmfPraser.getTargetUrl();
     if (!url.isEmpty())
     {
+        auto prevFactor = webView->zoomFactor();
         webView->load(QUrl(url));
         return;
     }
