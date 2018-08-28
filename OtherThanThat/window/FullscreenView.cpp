@@ -41,6 +41,7 @@ void FullscreenView::resizeEvent(QResizeEvent *event)
 
     QRect ntfGeo(QPoint(0, 0), fsNotification->sizeHint());
     ntfGeo.moveCenter(viewGeo.center());
+    ntfGeo.moveTop(viewGeo.top());
     fsNotification->setGeometry(ntfGeo);
 
     QWidget::resizeEvent(event);
