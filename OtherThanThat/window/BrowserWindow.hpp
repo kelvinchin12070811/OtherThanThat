@@ -41,7 +41,7 @@ private slots:
     void saveBookmark();
     void savePDF();
     void titleChanger(const QString& newTitle);
-    void zoomFactorChecker(const QUrl&);
+    void zoomFactorChecker(const QUrl& url);
 
 private:
     bool isMainWindow;

@@ -85,7 +85,7 @@ void BrowserWindow::connectObjects()
     connect(webView, &CustomWebView::loadStarted, this, &BrowserWindow::loadStarted);
     connect(webView->page(), &QWebEnginePage::fullScreenRequested, this, &BrowserWindow::fullScreenRequested);
     connect(webView, &CustomWebView::titleChanged, this, &BrowserWindow::titleChanger);
-    connect(webView, &CustomWebView::urlChanged, this, &BrowserWindow::zoomFactorChecker);
+    //connect(webView, &CustomWebView::urlChanged, this, &BrowserWindow::zoomFactorChecker);
     connect(QWebEngineProfile::defaultProfile(), &QWebEngineProfile::downloadRequested, this, &BrowserWindow::downloadRequested);
 }
 
@@ -202,7 +202,6 @@ void BrowserWindow::loadStarted()
 {
     loaded = false;
     this->setWindowTitle(webTitle + " on OtherThanThat [Loading...]");
-    zoomFactorChecker(QUrl());
 }
 
 void BrowserWindow::loadFinished()
@@ -218,11 +217,10 @@ void BrowserWindow::openBookmark()
     if (file.isEmpty()) return;
 
     BookmarkFilePraser bmfPraser(file, BookmarkFilePraser::FileMode::LoadFile);
-    auto url = bmfPraser.getTargetUrl();
+    QUrl url = bmfPraser.getTargetUrl();
     if (!url.isEmpty())
     {
-        auto prevFactor = webView->zoomFactor();
-        webView->load(QUrl(url));
+        webView->load(url);
         return;
     }
 }
@@ -259,7 +257,7 @@ void BrowserWindow::titleChanger(const QString &newTitle)
     this->setWindowTitle(newTitle + " on OtherThanThat");
 }
 
-void BrowserWindow::zoomFactorChecker(const QUrl&)
+void BrowserWindow::zoomFactorChecker(const QUrl& url)
 {
     //set zoom factor for heigher dpi each time url loaded
     auto dpiScale = Config::getInstance().getDPIScale();
