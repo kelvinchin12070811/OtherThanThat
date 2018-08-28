@@ -85,7 +85,7 @@ void BrowserWindow::connectObjects()
     connect(webView, &CustomWebView::loadStarted, this, &BrowserWindow::loadStarted);
     connect(webView->page(), &QWebEnginePage::fullScreenRequested, this, &BrowserWindow::fullScreenRequested);
     connect(webView, &CustomWebView::titleChanged, this, &BrowserWindow::titleChanger);
-    //connect(webView, &CustomWebView::urlChanged, this, &BrowserWindow::zoomFactorChecker);
+    connect(webView, &CustomWebView::urlChanged, this, &BrowserWindow::zoomFactorChecker);
     connect(QWebEngineProfile::defaultProfile(), &QWebEngineProfile::downloadRequested, this, &BrowserWindow::downloadRequested);
 }
 
@@ -217,10 +217,19 @@ void BrowserWindow::openBookmark()
     if (file.isEmpty()) return;
 
     BookmarkFilePraser bmfPraser(file, BookmarkFilePraser::FileMode::LoadFile);
-    QUrl url = bmfPraser.getTargetUrl();
+    auto url = bmfPraser.getTargetUrl();
     if (!url.isEmpty())
     {
-        webView->load(url);
+        webView->setHtml(QString("<html>"
+                                 "<head>"
+                                 "<title>Redirecting to bookmarked destination...</title>"
+                                 "</head>"
+                                 "<body>"
+                                 "<script>"
+                                 "window.location = '%1';"
+                                 "</script>"
+                                 "</body>"
+                                 "</html>").arg(url));
         return;
     }
 }

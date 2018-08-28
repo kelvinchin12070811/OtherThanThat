@@ -16,7 +16,7 @@ Config & Config::getInstance()
 
 float Config::getDPIScale()
 {
-    return 1.0;
+    return dpiScale;
 }
 
 const QByteArray& Config::getWindowGeo() const
