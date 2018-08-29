@@ -1,3 +1,4 @@
+#include <vector>
 #include <qdesktopservices.h>
 #include <qmessagebox.h>
 #include "CustomWebRenderer.hpp"
@@ -19,10 +20,24 @@ bool CustomWebRenderer::acceptNavigationRequest(const QUrl &url, NavigationType 
     };
 
     auto link = url.toString();
-    if (link.indexOf("ad") != -1) return true;
-    if (link.indexOf("google") != -1) return true;
-    if (link.indexOf("youtube") != -1) return true;
 
+    std::vector<QString> filters = {
+      "ad",
+      "google",
+      "youtube"
+    };
+
+    {
+        auto filterChecker = [link, filters]()->bool {
+          for (auto& itr : filters)
+          {
+              if (link.indexOf(itr) > -1)
+                  return true;
+          }
+        };
+
+        if (filterChecker()) return true;
+    }
     if (openExternalRequest() == QMessageBox::Yes)
         QDesktopServices::openUrl(url);
     return false;

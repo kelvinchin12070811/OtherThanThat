@@ -223,12 +223,8 @@ void BrowserWindow::openBookmark()
         webView->setHtml(QString("<html>"
                                  "<head>"
                                  "<title>Redirecting to bookmarked destination...</title>"
+                                 "<meta http-equiv=\"refresh\" content=\"5;url=%1\">"
                                  "</head>"
-                                 "<body>"
-                                 "<script>"
-                                 "window.location = '%1';"
-                                 "</script>"
-                                 "</body>"
                                  "</html>").arg(url));
         return;
     }
