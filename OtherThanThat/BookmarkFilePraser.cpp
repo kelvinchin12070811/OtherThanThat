@@ -1,5 +1,8 @@
 #include <sstream>
+#include <qfile.h>
+#include <qfileinfo.h>
 #include <qmessagebox.h>
+#include <qtextstream.h>
 #include "BookmarkFilePraser.hpp"
 #include "libs/pugixml/pugixml.hpp"
 
@@ -11,7 +14,11 @@ BookmarkFilePraser::BookmarkFilePraser(const QString &name, FileMode mode):
         try
         {
             pugi::xml_document document;
-            document.load_file(name.toUtf8().data());
+            QFile file(fileName);
+            file.open(QIODevice::ReadOnly);
+            QTextStream ts(&file);
+            document.load(std::string(ts.readAll().toUtf8().data()).c_str());
+
             auto root = document.child("bookmark_meta");
             if (root.empty()) throw std::runtime_error("error prasing bookmark file");
 
@@ -48,7 +55,15 @@ void BookmarkFilePraser::dump() const
 
     root.append_child("target").text().set(targetUrl.toUtf8().data());
 
-    document.save_file(fileName.toUtf8().data());
+    std::ostringstream ss;
+    document.save(ss);
+
+    QFile file(fileName);
+    if (file.open(QIODevice::WriteOnly))
+    {
+        QTextStream ts(&file);
+        ts << QString::fromUtf8(QByteArray(ss.str().c_str(), ss.str().size()));
+    }
 }
 
 /********** [Getters] **********/

@@ -240,6 +240,10 @@ void BrowserWindow::saveBookmark()
     QString file = QFileDialog::getSaveFileName(this, "Save bookmark to...", webTitle, "Bookmark file(*.bmf)");
     if (file.isEmpty()) return;
 
+    QFileInfo fileName(file);
+    if (fileName.baseName() == webTitle)
+        file = fileName.path() + "/" + webTitle + "." + fileName.completeSuffix();
+
     BookmarkFilePraser bmfPraser(file, BookmarkFilePraser::FileMode::CreateFile);
     bmfPraser.setTargetUrl(webView->url().toString());
     bmfPraser.dump();
